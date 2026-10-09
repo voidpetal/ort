@@ -38,6 +38,22 @@ class JavaBootstrapperFunTest : StringSpec({
         JavaBootstrapper.isRunningOnJdk(Environment.JAVA_VERSION) shouldBe true
     }
 
+    "The Java major version running the test should be detected as a JDK" {
+        JavaBootstrapper.isRunningOnJdk(Environment.JAVA_VERSION.substringBefore('.')) shouldBe true
+    }
+
+    "A different Java minor version should not be detected as the running JDK" {
+        val majorVersion = Environment.JAVA_VERSION.substringBefore('.')
+
+        JavaBootstrapper.isRunningOnJdk("$majorVersion.999") shouldBe false
+    }
+
+    "A Java pre-release version should not be detected as the running JDK" {
+        val majorVersion = Environment.JAVA_VERSION.substringBefore('.')
+
+        JavaBootstrapper.isRunningOnJdk("$majorVersion-ea") shouldBe false
+    }
+
     "A JDK for Temurin 27 can be found" {
         val tempCache = Cache(tempdir(), 1.mebibytes)
 

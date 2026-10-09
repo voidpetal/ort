@@ -61,7 +61,12 @@ object JavaBootstrapper {
     fun isRunningOnJdk(version: String): Boolean {
         val requestedVersion = Semver.coerce(version)
         val runningVersion = Semver.coerce(Environment.JAVA_VERSION)
-        if (requestedVersion != runningVersion) return false
+        val versionsMatch = if (version.all(Char::isDigit)) {
+            requestedVersion?.major == runningVersion?.major
+        } else {
+            requestedVersion == runningVersion
+        }
+        if (!versionsMatch) return false
 
         val javaHome = System.getProperty("java.home") ?: return false
         val javac = File(javaHome) / "bin" / "javac"
